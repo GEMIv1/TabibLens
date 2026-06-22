@@ -1,6 +1,6 @@
-@AI_Agent_for_Prescription_Fulfillment_HostAddress = http://localhost:5081
+@TabibLens = http://localhost:5081
 
-GET {{AI_Agent_for_Prescription_Fulfillment_HostAddress}}/weatherforecast/
+GET {{TabibLens}}/weatherforecast/
 Accept: application/json
 
 ###
