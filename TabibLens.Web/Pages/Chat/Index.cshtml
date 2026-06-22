@@ -1,0 +1,168 @@
+@page
+@model TabibLens.Web.Pages.Chat.IndexModel
+@{
+    ViewData["Title"] = "AI Chat Assistant";
+}
+
+<div class="chat-layout animate-fade-in">
+    <aside class="chat-sessions-panel" id="chatSessionsPanel">
+        <div class="chat-sessions-header">
+            <h3>Chat History</h3>
+            <button class="btn btn-primary btn-sm btn-icon" onclick="openModal('newChatModal')" title="New Chat">
+                <span class="icon">+</span>
+            </button>
+        </div>
+        <div class="chat-sessions-list">
+            @if (Model.Sessions.Any())
+            {
+                foreach (var session in Model.Sessions)
+                {
+                    var isActive = Model.ActiveSessionId == session.Id;
+                    <div class="chat-session-item @(isActive ? "active" : "")" onclick="window.location.href='?sessionId=@session.Id'">
+                        <div class="chat-session-title">
+                            @if (session.PrescriptionId.HasValue)
+                            {
+
+                            }
+                            @session.Title
+                        </div>
+                        <div class="chat-session-meta">
+                            @session.CreatedAt.ToString("MMM dd") • @session.MessageCount msgs
+                        </div>
+                    </div>
+                }
+            }
+            else
+            {
+                <div class="text-center text-muted" style="padding: var(--space-md); font-size: 0.85rem;">
+                    No chat sessions yet.
+                </div>
+            }
+        </div>
+    </aside>
+
+    <section class="chat-area">
+        @if (Model.ActiveSessionId.HasValue)
+        {
+            var activeSession = Model.Sessions.FirstOrDefault(s => s.Id == Model.ActiveSessionId);
+            <div class="chat-area-header">
+                <div>
+                    <h3 style="font-size: 1.1rem; margin: 0;">@activeSession?.Title</h3>
+                    @if (activeSession?.PrescriptionId.HasValue == true)
+                    {
+                        <a asp-page="/Prescriptions/Details" asp-route-id="@activeSession.PrescriptionId" class="text-info" style="font-size: 0.8rem;">
+                            View Linked Prescription →
+                        </a>
+                    }
+                </div>
+                <div class="d-flex gap-sm">
+                    <button class="btn btn-ghost btn-sm btn-icon" onclick="document.getElementById('chatSessionsPanel').classList.toggle('open')" style="display: none;" id="mobileChatToggle">
+                        ☰
+                    </button>
+                    <form method="post" asp-page-handler="DeleteSession" onsubmit="return confirmAction('Delete this chat session?');">
+                        <input type="hidden" name="sessionId" value="@Model.ActiveSessionId" />
+                        <button type="submit" class="btn btn-danger btn-sm">Delete Chat</button>
+                    </form>
+                </div>
+            </div>
+
+            <div class="chat-messages" id="chatBox">
+                @if (Model.Messages.Any())
+                {
+                    foreach (var msg in Model.Messages.OrderBy(m => m.CreatedAt))
+                    {
+                        <div class="chat-bubble @msg.Role.ToLower()">
+                            <div style="white-space: pre-wrap;">@msg.Content</div>
+                            <div class="chat-bubble-time">@msg.CreatedAt.ToString("HH:mm")</div>
+                        </div>
+                    }
+                }
+                else
+                {
+                    <div class="chat-empty">
+
+                        <h3>AI Pharmaceutical Assistant</h3>
+                        <p>Ask me about drug interactions, side effects, or general medication queries.</p>
+                        @if (activeSession?.PrescriptionId.HasValue == true)
+                        {
+                            <p class="text-info mt-sm" style="font-size: 0.85rem;">
+                                This chat has access to your linked prescription data.
+                            </p>
+                        }
+                    </div>
+                }
+            </div>
+
+            <form method="post" asp-page-handler="SendMessage" class="chat-input-area" id="messageForm">
+                <input type="hidden" name="sessionId" value="@Model.ActiveSessionId" />
+                <textarea name="message" class="chat-input auto-resize" rows="1" placeholder="Type your message here..." required autofocus onkeydown="if(event.keyCode==13 && !event.shiftKey) { event.preventDefault(); document.getElementById('messageForm').submit(); }"></textarea>
+                <button type="submit" class="chat-send-btn" id="sendBtn" title="Send (Enter)">
+                    <span class="icon">➤</span>
+                </button>
+            </form>
+        }
+        else
+        {
+            <div class="chat-empty">
+
+                <h3>Select a conversation</h3>
+                <p>Choose an existing chat from the sidebar or start a new one.</p>
+                <button class="btn btn-primary mt-md" onclick="openModal('newChatModal')">Start New Chat</button>
+            </div>
+        }
+    </section>
+</div>
+
+<div class="modal-backdrop" id="newChatModal">
+    <div class="modal">
+        <h2 class="modal-title">Start New Chat</h2>
+        <form method="post" asp-page-handler="CreateSession">
+            <div class="form-group">
+                <label class="form-label">Chat Title</label>
+                <input type="text" name="title" class="form-input" placeholder="E.g., Paracetamol side effects" required />
+            </div>
+            <div class="modal-actions">
+                <button type="button" class="btn btn-ghost" onclick="closeModal('newChatModal')">Cancel</button>
+                <button type="submit" class="btn btn-primary">Start Chat</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            scrollToBottom('chatBox');
+
+            if (window.innerWidth <= 900) {
+                const toggleBtn = document.getElementById('mobileChatToggle');
+                if (toggleBtn) toggleBtn.style.display = 'flex';
+            }
+
+            const messageForm = document.getElementById('messageForm');
+            if (messageForm) {
+                messageForm.addEventListener('submit', () => {
+                    const chatBox = document.getElementById('chatBox');
+                    const sendBtn = document.getElementById('sendBtn');
+                    const textarea = messageForm.querySelector('textarea');
+                    
+                    if (textarea.value.trim() !== '') {
+                        sendBtn.disabled = true;
+                        
+                        const userDiv = document.createElement('div');
+                        userDiv.className = 'chat-bubble user';
+                        userDiv.innerHTML = `<div style="white-space: pre-wrap;">${textarea.value}</div>`;
+                        chatBox.appendChild(userDiv);
+                        
+                        const typingDiv = document.createElement('div');
+                        typingDiv.className = 'typing-indicator';
+                        typingDiv.innerHTML = '<span></span><span></span><span></span>';
+                        chatBox.appendChild(typingDiv);
+                        
+                        scrollToBottom('chatBox');
+                    }
+                });
+            }
+        });
+    </script>
+}

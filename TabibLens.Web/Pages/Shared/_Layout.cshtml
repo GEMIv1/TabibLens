@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] — TabibLens</title>
+    <meta name="description" content="TabibLens — AI-Powered Prescription Fulfillment & Pharmaceutical Assistant" />
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+</head>
+<body>
+    @{
+        var userName = Context.Session.GetString("UserName") ?? "";
+        var userEmail = Context.Session.GetString("UserEmail") ?? "";
+        var initials = userName.Length > 0 ? userName[0].ToString().ToUpper() : "U";
+        var currentPage = ViewContext.RouteData.Values["page"]?.ToString() ?? "";
+    }
+
+    <div class="app-layout">
+        <!-- Mobile Nav Toggle -->
+        <button class="mobile-nav-toggle" onclick="toggleSidebar()" aria-label="Toggle navigation">☰</button>
+
+        <!-- Sidebar Overlay (Mobile) -->
+        <div class="sidebar-overlay" onclick="closeSidebar()"></div>
+
+        <!-- Sidebar -->
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-brand">
+                <span class="sidebar-brand-text">TabibLens</span>
+            </div>
+
+            <nav class="sidebar-nav">
+                <a asp-page="/Dashboard" class="sidebar-link @(currentPage.Contains("Dashboard") ? "active" : "")" id="nav-dashboard">
+                    <span>Dashboard</span>
+                </a>
+                <a asp-page="/Prescriptions/Index" class="sidebar-link @(currentPage.Contains("Prescription") ? "active" : "")" id="nav-prescriptions">
+                    <span>Prescriptions</span>
+                </a>
+                <a asp-page="/Prescriptions/Scan" class="sidebar-link @(currentPage.Contains("Scan") ? "active" : "")" id="nav-scan">
+                    <span>Scan New</span>
+                </a>
+                <a asp-page="/Chat/Index" class="sidebar-link @(currentPage.Contains("Chat") ? "active" : "")" id="nav-chat">
+                    <span>AI Assistant</span>
+                </a>
+
+                <div class="sidebar-spacer"></div>
+
+                <form method="post" asp-page="/Auth/Logout">
+                    <button type="submit" class="sidebar-link w-full" style="border:none;background:none;text-align:left;cursor:pointer;" id="nav-logout">
+                        <span>Logout</span>
+                    </button>
+                </form>
+            </nav>
+
+            <div class="sidebar-footer">
+                <div class="sidebar-user">
+                    <div class="sidebar-avatar">@initials</div>
+                    <div class="sidebar-user-info">
+                        <div class="sidebar-user-name">@userName</div>
+                        <div class="sidebar-user-email">@userEmail</div>
+                    </div>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            @RenderBody()
+        </main>
+    </div>
+
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

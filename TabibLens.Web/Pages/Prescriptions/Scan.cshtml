@@ -1,0 +1,69 @@
+@page
+@model TabibLens.Web.Pages.Prescriptions.ScanModel
+@{
+    ViewData["Title"] = "Scan Prescription";
+}
+
+<div class="page-header stagger-children">
+    <div>
+        <h1>Scan Prescription</h1>
+        <p class="page-subtitle">Upload a handwritten prescription image for AI-powered OCR.</p>
+    </div>
+    <a asp-page="./Index" class="btn btn-secondary">
+        <span class="icon">←</span> Back
+    </a>
+</div>
+
+<div class="card stagger-children" style="animation-delay: 0.2s; max-width: 800px; margin: 0 auto;">
+    
+    @if (!string.IsNullOrEmpty(Model.ErrorMessage))
+    {
+        <div class="toast-error mb-lg" style="padding: 12px; border-radius: 8px;">
+            <span class="icon">✕</span> @Model.ErrorMessage
+        </div>
+    }
+
+    <form method="post" enctype="multipart/form-data" id="scanForm">
+        <div class="upload-zone" id="dropZone">
+            <input type="file" name="Image" id="fileInput" class="hidden" accept="image/jpeg,image/png,image/jpg" required />
+            
+            <div class="upload-placeholder" id="placeholder">
+                <div class="title">Click to upload or drag & drop</div>
+                <div class="subtitle">Supports JPG, PNG (Max 10MB)</div>
+            </div>
+            
+            <div class="upload-preview hidden" id="previewArea">
+            </div>
+        </div>
+
+        <div class="mt-lg d-flex justify-between align-center">
+            <span class="text-muted text-sm">Please ensure the handwriting is legible and well-lit.</span>
+            <button type="submit" class="btn btn-primary btn-lg" id="submitBtn">
+                Process via AI
+            </button>
+        </div>
+    </form>
+</div>
+
+<div class="modal-backdrop" id="loadingModal">
+    <div class="modal text-center" style="max-width: 300px;">
+        <div class="spinner spinner-lg" style="margin: 0 auto var(--space-md);"></div>
+        <h3>Analyzing Image...</h3>
+        <p class="text-muted text-sm">This may take 10-30 seconds depending on the image complexity.</p>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            initUploadZone('dropZone', 'fileInput', 'previewArea');
+            
+            document.getElementById('scanForm').addEventListener('submit', function(e) {
+                if (document.getElementById('fileInput').files.length > 0) {
+                    openModal('loadingModal');
+                    document.getElementById('submitBtn').disabled = true;
+                }
+            });
+        });
+    </script>
+}

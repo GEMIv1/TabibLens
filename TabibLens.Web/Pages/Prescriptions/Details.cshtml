@@ -1,0 +1,141 @@
+@page "{id:guid}"
+@model TabibLens.Web.Pages.Prescriptions.DetailsModel
+@{
+    ViewData["Title"] = "Prescription Details";
+}
+
+<div class="page-header stagger-children">
+    <div>
+        <div class="d-flex align-center gap-sm">
+            <a asp-page="./Index" class="btn btn-ghost btn-sm" style="padding: 0; min-width: 32px;"><span class="icon">←</span></a>
+            <h1>Prescription Details</h1>
+        </div>
+        <p class="page-subtitle">ID: @Model.Prescription.Id</p>
+    </div>
+    <div class="d-flex align-center gap-sm">
+        <span class="badge badge-@Model.Prescription.Status.ToLower()">
+            <span class="badge-dot"></span> @Model.Prescription.Status
+        </span>
+        
+        <form method="post" asp-page-handler="Chat" style="margin-left: var(--space-sm);">
+            <button type="submit" class="btn btn-primary">
+                Ask AI About This
+            </button>
+        </form>
+    </div>
+</div>
+
+@if (Model.Prescription.Status == "OcrProcessing" || Model.Prescription.Status == "Uploaded")
+{
+    <div class="card mb-lg animate-fade-in text-center" style="padding: var(--space-3xl);">
+        <div class="spinner spinner-lg mb-md" style="margin: 0 auto;"></div>
+        <h3>Processing Prescription</h3>
+        <p class="text-muted">The AI is currently analyzing this prescription. Please refresh the page in a moment.</p>
+        <button onclick="window.location.reload()" class="btn btn-secondary mt-md">Refresh Now</button>
+    </div>
+}
+else if (Model.Prescription.Status == "Failed")
+{
+    <div class="card mb-lg animate-fade-in" style="border-color: var(--color-danger);">
+        <div class="d-flex align-center gap-md">
+            <div>
+                <h3 class="text-danger">Processing Failed</h3>
+                <p>@Model.Prescription.FailureReason</p>
+            </div>
+        </div>
+    </div>
+}
+
+<div class="card mb-lg stagger-children">
+    <div class="card-header">
+        <h2 class="card-title">Parsed Medications</h2>
+        
+        @if (Model.Prescription.Status == "Uploaded" || Model.Prescription.Status == "Failed" || (Model.Prescription.Status == "PartiallyParsed" && Model.Prescription.Medications.Count == 0))
+        {
+            <form method="post" asp-page-handler="Parse">
+                <button type="submit" class="btn btn-secondary btn-sm">
+                    Force Parse Medications
+                </button>
+            </form>
+        }
+    </div>
+
+    @if (Model.Prescription.Medications.Any())
+    {
+        <div class="med-grid">
+            @foreach (var med in Model.Prescription.Medications)
+            {
+                <div class="med-card">
+                    <div class="med-card-header">
+                        <div class="med-card-name">@(med.DrugNameNormalized ?? med.DrugRawData)</div>
+                        @if (!string.IsNullOrEmpty(med.DosageForm) && med.DosageForm != "Unknown")
+                        {
+                            <div class="med-card-form">@med.DosageForm</div>
+                        }
+                    </div>
+                    
+                    <div class="med-card-details">
+                        <div class="med-detail-item">
+                            <div class="med-detail-label">Dose</div>
+                            <div>@(med.DoseRaw ?? "—")</div>
+                        </div>
+                        <div class="med-detail-item">
+                            <div class="med-detail-label">Frequency</div>
+                            <div>@(med.FrequencyRaw ?? "—")</div>
+                        </div>
+                        <div class="med-detail-item">
+                            <div class="med-detail-label">Duration</div>
+                            <div>@(med.DurationRaw ?? "—")</div>
+                        </div>
+                        <div class="med-detail-item">
+                            <div class="med-detail-label">Strength</div>
+                            <div>@(med.StrengthRaw ?? "—")</div>
+                        </div>
+                    </div>
+                    
+                    <div class="med-confidence">
+                        <span>Confidence:</span>
+                        <div class="progress-bar">
+                            @{
+                                var confClass = med.ConfidenceScore > 0.8 ? "high" : (med.ConfidenceScore > 0.5 ? "medium" : "low");
+                                var confPct = (int)(med.ConfidenceScore * 100);
+                            }
+                            <div class="progress-bar-fill @confClass" style="width: @confPct%;"></div>
+                        </div>
+                        <span>@confPct%</span>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+    else
+    {
+        <div class="empty-state" style="padding: var(--space-xl);">
+            <p>No medications have been parsed yet.</p>
+        </div>
+    }
+</div>
+
+@if (!string.IsNullOrEmpty(Model.Prescription.OcrRawData))
+{
+    <div class="card stagger-children">
+        <div class="card-header">
+            <h2 class="card-title">OCR Raw Output</h2>
+            <button type="button" class="btn btn-ghost btn-sm" onclick="document.getElementById('rawOcr').classList.toggle('hidden')">
+                Toggle View
+            </button>
+        </div>
+        <div id="rawOcr" class="raw-text-panel">@Model.Prescription.OcrRawData</div>
+    </div>
+}
+
+@if (TempData["SuccessMessage"] != null)
+{
+    @section Scripts {
+        <script>
+            document.addEventListener('DOMContentLoaded', () => {
+                showToast('@TempData["SuccessMessage"]', 'success');
+            });
+        </script>
+    }
+}

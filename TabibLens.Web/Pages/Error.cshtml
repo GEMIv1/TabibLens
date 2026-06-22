@@ -1,0 +1,22 @@
+@page
+@model TabibLens.Web.Pages.ErrorModel
+@{
+    ViewData["Title"] = "Error";
+    Layout = "_LoginLayout"; // Minimal layout
+}
+
+<div class="auth-container">
+    <div class="auth-card text-center">
+        <h1 class="mb-sm">Something went wrong</h1>
+        <p class="text-muted mb-lg">An unexpected error occurred while processing your request.</p>
+        
+        @if (Model.ShowRequestId)
+        {
+            <p style="font-size: 0.8rem; color: var(--text-muted); font-family: monospace; padding: 8px; background: var(--bg-deepest); border-radius: 4px;">
+                Request ID: @Model.RequestId
+            </p>
+        }
+
+        <a asp-page="/Dashboard" class="btn btn-primary mt-lg">Return to Dashboard</a>
+    </div>
+</div>

@@ -1,0 +1,82 @@
+@page
+@model TabibLens.Web.Pages.Prescriptions.IndexModel
+@{
+    ViewData["Title"] = "Prescriptions";
+}
+
+<div class="page-header stagger-children">
+    <div>
+        <h1>Prescriptions</h1>
+        <p class="page-subtitle">Manage and track your scanned prescriptions.</p>
+    </div>
+    <a asp-page="/Prescriptions/Scan" class="btn btn-primary">
+        Scan New
+    </a>
+</div>
+
+<div class="card stagger-children" style="animation-delay: 0.2s">
+    <div class="tabs">
+        <a asp-page="./Index" asp-route-status="" class="tab @(string.IsNullOrEmpty(Model.CurrentStatus) ? "active" : "")">All</a>
+        <a asp-page="./Index" asp-route-status="Uploaded" class="tab @(Model.CurrentStatus == "Uploaded" ? "active" : "")">Uploaded</a>
+        <a asp-page="./Index" asp-route-status="Parsed" class="tab @(Model.CurrentStatus == "Parsed" ? "active" : "")">Parsed</a>
+        <a asp-page="./Index" asp-route-status="Failed" class="tab @(Model.CurrentStatus == "Failed" ? "active" : "")">Failed</a>
+    </div>
+
+    @if (Model.Prescriptions.Any())
+    {
+        <div class="table-container">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Date Uploaded</th>
+                        <th>Status</th>
+                        <th>Failure Reason</th>
+                        <th>Processed Date</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var p in Model.Prescriptions)
+                    {
+                        <tr>
+                            <td>@p.CreatedAt.ToString("MMM dd, yyyy - HH:mm")</td>
+                            <td>
+                                <span class="badge badge-@p.Status.ToLower()">
+                                    <span class="badge-dot"></span> @p.Status
+                                </span>
+                            </td>
+                            <td class="text-danger">@(p.FailureReason ?? "—")</td>
+                            <td>@(p.OcrProcessedAt?.ToString("MMM dd, yyyy - HH:mm") ?? "—")</td>
+                            <td>
+                                <div class="table-actions">
+                                    <a asp-page="./Details" asp-route-id="@p.Id" class="btn btn-secondary btn-sm">View</a>
+                                    <form method="post" asp-page-handler="Delete" asp-route-id="@p.Id" onsubmit="return confirmAction('Are you sure you want to delete this prescription?');" style="display:inline;">
+                                        <button type="submit" class="btn btn-danger btn-sm">Delete</button>
+                                    </form>
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+    else
+    {
+        <div class="empty-state">
+            <h3>No prescriptions found</h3>
+            <p>You haven't scanned any prescriptions yet, or none match the current filter.</p>
+        </div>
+    }
+</div>
+
+@if (TempData["SuccessMessage"] != null)
+{
+    @section Scripts {
+        <script>
+            document.addEventListener('DOMContentLoaded', () => {
+                showToast('@TempData["SuccessMessage"]', 'success');
+            });
+        </script>
+    }
+}

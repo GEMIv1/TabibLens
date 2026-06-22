@@ -1,0 +1,6 @@
+@AI_Agent_for_Prescription_Fulfillment_HostAddress = http://localhost:5081
+
+GET {{AI_Agent_for_Prescription_Fulfillment_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

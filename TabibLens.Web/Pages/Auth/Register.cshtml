@@ -1,0 +1,68 @@
+@page
+@model TabibLens.Web.Pages.Auth.RegisterModel
+@{
+    ViewData["Title"] = "Register";
+    Layout = "_LoginLayout";
+}
+
+<div class="auth-container">
+    <div class="auth-card">
+        <div class="auth-logo">
+            <h1>Create Account</h1>
+            <p>Join TabibLens to start parsing prescriptions</p>
+        </div>
+
+        @if (!ModelState.IsValid)
+        {
+            <div class="auth-error">
+                <div asp-validation-summary="All" class="text-danger" style="margin-left: 8px;"></div>
+            </div>
+        }
+
+        <form method="post">
+            <div class="form-group">
+                <label asp-for="Input.UserName" class="form-label">Full Name</label>
+                <input asp-for="Input.UserName" class="form-input" autofocus />
+                <span asp-validation-for="Input.UserName" class="form-error"></span>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="Input.Email" class="form-label">Email Address</label>
+                <input asp-for="Input.Email" class="form-input"/>
+                <span asp-validation-for="Input.Email" class="form-error"></span>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="Input.PhoneNumber" class="form-label">Phone Number (Optional)</label>
+                <input asp-for="Input.PhoneNumber" class="form-input"/>
+                <span asp-validation-for="Input.PhoneNumber" class="form-error"></span>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="Input.Password" class="form-label">Password</label>
+                <input asp-for="Input.Password" class="form-input" type="password" placeholder="••••••••" oninput="checkPasswordStrength(this.value)" />
+                <div class="password-strength">
+                    <div class="password-strength-bar" style="width: 0%"></div>
+                </div>
+                <div class="form-hint">At least 6 chars, 1 uppercase, 1 lowercase, 1 number, 1 special char.</div>
+                <span asp-validation-for="Input.Password" class="form-error"></span>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="Input.ConfirmPassword" class="form-label">Confirm Password</label>
+                <input asp-for="Input.ConfirmPassword" class="form-input" type="password" placeholder="••••••••" />
+                <span asp-validation-for="Input.ConfirmPassword" class="form-error"></span>
+            </div>
+
+            <button type="submit" class="btn btn-primary w-full btn-lg mt-sm">Create Account</button>
+        </form>
+
+        <div class="auth-footer">
+            Already have an account? <a asp-page="./Login">Sign In</a>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

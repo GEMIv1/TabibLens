@@ -1,0 +1,111 @@
+@page
+@model TabibLens.Web.Pages.DashboardModel
+@{
+    ViewData["Title"] = "Dashboard";
+}
+
+<div class="page-header stagger-children">
+    <div>
+        <h1>Welcome, @Model.UserName</h1>
+        <p class="page-subtitle">Here is an overview of your prescription processing activity.</p>
+    </div>
+    <div class="d-flex gap-sm">
+        <a asp-page="/Prescriptions/Scan" class="btn btn-primary">
+            Scan New
+        </a>
+        <a asp-page="/Chat/Index" class="btn btn-secondary">
+            Ask AI
+        </a>
+    </div>
+</div>
+
+<div class="stats-grid stagger-children">
+    <div class="stat-card accent">
+        <div class="stat-info">
+            <div class="stat-label">Total Prescriptions</div>
+            <div class="stat-value">@Model.TotalCount</div>
+        </div>
+
+    </div>
+    <div class="stat-card success">
+        <div class="stat-info">
+            <div class="stat-label">Successfully Parsed</div>
+            <div class="stat-value">@Model.ParsedCount</div>
+        </div>
+
+    </div>
+    <div class="stat-card warning">
+        <div class="stat-info">
+            <div class="stat-label">Processing</div>
+            <div class="stat-value">@Model.ProcessingCount</div>
+        </div>
+
+    </div>
+    <div class="stat-card danger">
+        <div class="stat-info">
+            <div class="stat-label">Failed</div>
+            <div class="stat-value">@Model.FailedCount</div>
+        </div>
+
+    </div>
+</div>
+
+<div class="card stagger-children" style="animation-delay: 0.3s">
+    <div class="card-header">
+        <h2 class="card-title">Recent Prescriptions</h2>
+        <a asp-page="/Prescriptions/Index" class="btn btn-ghost btn-sm">View All →</a>
+    </div>
+
+    @if (Model.RecentPrescriptions.Any())
+    {
+        <div class="table-container">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Date Uploaded</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var p in Model.RecentPrescriptions)
+                    {
+                        <tr>
+                            <td>@p.CreatedAt.ToString("MMM dd, yyyy - HH:mm")</td>
+                            <td>
+                                <span class="badge badge-@p.Status.ToLower()">
+                                    <span class="badge-dot"></span> @p.Status
+                                </span>
+                            </td>
+                            <td>
+                                <div class="table-actions">
+                                    <a asp-page="/Prescriptions/Details" asp-route-id="@p.Id" class="btn btn-secondary btn-sm">View Details</a>
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+    else
+    {
+        <div class="empty-state">
+
+            <h3>No prescriptions yet</h3>
+            <p>Upload a handwritten prescription image to extract medications using AI.</p>
+            <a asp-page="/Prescriptions/Scan" class="btn btn-primary mt-md">Scan First Prescription</a>
+        </div>
+    }
+</div>
+
+@if (TempData["SuccessMessage"] != null)
+{
+    @section Scripts {
+        <script>
+            document.addEventListener('DOMContentLoaded', () => {
+                showToast('@TempData["SuccessMessage"]', 'success');
+            });
+        </script>
+    }
+}
