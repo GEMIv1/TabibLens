@@ -4,11 +4,15 @@ An AI-powered **.NET 8 Web API** for scanning handwritten prescriptions via OCR,
 
 ## Screenshots
 
-<p align="center">
-  <img src="./screenshots/Screenshot%202026-06-27%20143327.png" alt="Dashboard" width="32%" />
-  <img src="./screenshots/Screenshot%202026-06-27%20143526.png" alt="Prescription Scan" width="32%" />
-  <img src="./screenshots/Screenshot%202026-06-27%20143729.png" alt="AI Chat Assistant" width="32%" />
-</p>
+### Dashboard
+![Dashboard](./screenshots/Screenshot%202026-06-27%20143327.png)
+
+### Prescription Processing
+![Prescription Scan](./screenshots/Screenshot%202026-06-27%20143526.png)
+
+### AI Pharmaceutical Assistant
+![AI Chat Assistant](./screenshots/Screenshot%202026-06-27%20143729.png)
+
 
 ## Architecture
 
@@ -30,6 +34,24 @@ Clean Architecture with 4 backend layers, plus a frontend web application:
 │  Domain Layer (Entities, Enums, Interfaces)             │
 └─────────────────────────────────────────────────────────┘
 ```
+
+## Design Patterns
+
+### Architectural Patterns
+*   **Clean Architecture (Onion Architecture)**: The codebase is divided into isolated layers (`Domain`, `Application`, `Infra`, `Api/Web`). Core business logic is contained entirely inside the domain, and dependencies flow strictly inward, ensuring database and API framework details do not leak into the business logic.
+*   **Decoupled Client-Server Layout**: The Razor Pages application (`TabibLens.Web`) is isolated from the backend API (`TabibLens.Api`), communicating strictly via REST endpoints.
+
+### Design Patterns
+*   **Repository Pattern**: Encapsulates database query and write operations behind abstractions (`IRepository<T>` and custom entity repositories). This abstracts Entity Framework Core, making the application easier to unit test.
+*   **Unit of Work Pattern**: Combines database operations across multiple repositories into a single atomic transaction. Implemented via EF Core's `SaveChangesAsync` on the `AppDbContext`.
+*   **Strategy Pattern (Service Abstraction)**: External dependencies like Hugging Face (OCR) and Groq (AI Chat) are accessed through interfaces (`IOcrService` and `IChatAiService`). This lets you swap LLM providers without rewriting core services.
+*   **Dependency Injection (DI)**: Utilized to resolve and inject services, repositories, options, and db contexts, reducing tight coupling throughout the code.
+*   **Options Pattern**: Binds configuration sections from `appsettings.json` to strongly-typed configuration objects (like `HuggingFaceOptions` and `JwtSettings`).
+*   **Data Transfer Object (DTO) Pattern**: Custom schemas (e.g., `LoginDto`, `PrescriptionDto`) act as data transfer envelopes, preventing database entities from leaking into presentation layers.
+*   **Soft Delete Pattern**: Entities tracking state inherit from `BaseEntity` with `IsDeleted` and `DeletedAt` fields. The database repository interceptor and EF Core queries handle soft deletion automatically.
+*   **Global Exception Handling**: Custom middleware intercepts unhandled exceptions globally, standardizing JSON error outputs and HTTP status codes.
+*   **JWT & Refresh Token Rotation**: A stateless security pattern leveraging short-lived access tokens alongside revolving, database-stored refresh tokens to protect session validity.
+
 
 ### Domain Layer (`Domain/`)
 
@@ -268,25 +290,3 @@ TabibLens/
 ├── docker-compose.yml         # Docker Compose orchestration config
 └── screenshots/               # Folder containing application UI screenshots
 ```
-
----
-
-## Design Patterns & Architecture
-
-The application is built using standard enterprise patterns to ensure decoupling, scalability, and maintainability:
-
-### 1. Architectural Patterns
-*   **Clean Architecture (Onion Architecture)**: The codebase is divided into isolated layers (`Domain`, `Application`, `Infra`, `Api/Web`). Core business logic is contained entirely inside the domain, and dependencies flow strictly inward, ensuring database and API framework details do not leak into the business logic.
-*   **Decoupled Client-Server Layout**: The Razor Pages application (`TabibLens.Web`) is isolated from the backend API (`TabibLens.Api`), communicating strictly via REST endpoints.
-
-### 2. Design Patterns
-*   **Repository Pattern**: Encapsulates database query and write operations behind abstractions (`IRepository<T>` and custom entity repositories). This abstracts Entity Framework Core, making the application easier to unit test.
-*   **Unit of Work Pattern**: Combines database operations across multiple repositories into a single atomic transaction. Implemented via EF Core's `SaveChangesAsync` on the `AppDbContext`.
-*   **Strategy Pattern (Service Abstraction)**: External dependencies like Hugging Face (OCR) and Groq (AI Chat) are accessed through interfaces (`IOcrService` and `IChatAiService`). This lets you swap LLM providers without rewriting core services.
-*   **Dependency Injection (DI)**: Utilized to resolve and inject services, repositories, options, and db contexts, reducing tight coupling throughout the code.
-*   **Options Pattern**: Binds configuration sections from `appsettings.json` to strongly-typed configuration objects (like `HuggingFaceOptions` and `JwtSettings`).
-*   **Data Transfer Object (DTO) Pattern**: Custom schemas (e.g., `LoginDto`, `PrescriptionDto`) act as data transfer envelopes, preventing database entities from leaking into presentation layers.
-
-*   **Soft Delete Pattern**: Entities tracking state inherit from `BaseEntity` with `IsDeleted` and `DeletedAt` fields. The database repository interceptor and EF Core queries handle soft deletion automatically.
-*   **Global Exception Handling**: Custom middleware intercepts unhandled exceptions globally, standardizing JSON error outputs and HTTP status codes.
-*   **JWT & Refresh Token Rotation**: A stateless security pattern leveraging short-lived access tokens alongside revolving, database-stored refresh tokens to protect session validity.
