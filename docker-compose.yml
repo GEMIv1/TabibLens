@@ -1,0 +1,62 @@
+version: '3.8'
+
+services:
+  db:
+    image: postgres:16-alpine
+    container_name: tabiblens_db
+    environment:
+      POSTGRES_DB: TabibLens
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: 1234
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d TabibLens"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  api:
+    image: tabiblens_api:latest
+    container_name: tabiblens_api
+    build:
+      context: .
+      dockerfile: TabibLens.Api/Dockerfile
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ConnectionStrings__DefaultConnection=Host=db;Port=5432;Database=TabibLens;Username=postgres;Password=1234
+      - JwtSettings__SecretKey=ZFrErpfPlCdBGMk1mtOMnwQGTtMQP3ubWY8vSgDvNA+Ow194NXU6HwQZULFRNOn0F2Z13cSEzqY8QGlYWLQXOA==
+      - JwtSettings__Issuer=TabibLens
+      - JwtSettings__Audience=TabibLens-Client
+      - JwtSettings__AccessTokenExpiryMinutes=15
+      - JwtSettings__RefreshTokenExpiryDays=7
+      - HuggingFace__ApiKey=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
+      - HuggingFace__ModelId=Qwen/Qwen3-VL-8B-Instruct:novita
+      - Groq__ApiKey=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
+      - Groq__Model=llama-3.3-70b-versatile
+      - Groq__Temperature=0.7
+      - Groq__MaxTokens=1024
+    ports:
+      - "5081:5081"
+    depends_on:
+      db:
+        condition: service_healthy
+
+  web:
+    image: tabiblens_web:latest
+    container_name: tabiblens_web
+    build:
+      context: .
+      dockerfile: TabibLens.Web/Dockerfile
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ApiSettings__BaseUrl=http://api:5081
+    ports:
+      - "5100:5100"
+    depends_on:
+      - api
+
+volumes:
+  pgdata:

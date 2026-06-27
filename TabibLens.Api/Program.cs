@@ -100,6 +100,13 @@ namespace TabibLens.Api
 
             app.MapControllers();
 
+            // Run automatic database migrations on startup
+            using (var scope = app.Services.CreateScope())
+            {
+                var dbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+                dbContext.Database.Migrate();
+            }
+
             app.Run();
         }
     }

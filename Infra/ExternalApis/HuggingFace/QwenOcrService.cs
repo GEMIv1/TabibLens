@@ -63,7 +63,7 @@ namespace Infra.ExternalApis.HuggingFace
             var json = JsonSerializer.Serialize(requestBody);
             using var content = new StringContent(json, Encoding.UTF8, "application/json");
 
-            var url = $"{_options.BaseUrl}/{_options.ModelId}/v1/chat/completions";
+            var url = $"{_options.BaseUrl}/chat/completions";
             var response = await _httpClient.PostAsync(url, content, cancellationToken);
             var responseBody = await response.Content.ReadAsStringAsync(cancellationToken);
 

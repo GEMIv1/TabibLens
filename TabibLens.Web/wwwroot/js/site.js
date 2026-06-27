@@ -1,8 +1,4 @@
-// ═══════════════════════════════════════════════════════════
-//  TabibLens — Global JavaScript
-// ═══════════════════════════════════════════════════════════
-
-// ── Sidebar Toggle (Mobile) ──
+/*Sidebar Toggle (Mobile)*/
 function toggleSidebar() {
     const sidebar = document.querySelector('.sidebar');
     const overlay = document.querySelector('.sidebar-overlay');
@@ -17,7 +13,7 @@ function closeSidebar() {
     overlay?.classList.remove('open');
 }
 
-// ── Toast Notifications ──
+/*Toast Notifications*/
 function showToast(message, type = 'info', duration = 4000) {
     let container = document.querySelector('.toast-container');
     if (!container) {
@@ -42,7 +38,7 @@ function showToast(message, type = 'info', duration = 4000) {
     }, duration);
 }
 
-// ── File Upload Preview ──
+/*File Upload Preview*/
 function initUploadZone(zoneId, inputId, previewId) {
     const zone = document.getElementById(zoneId);
     const input = document.getElementById(inputId);
@@ -91,7 +87,7 @@ function showPreview(file, previewEl, zoneEl) {
     reader.readAsDataURL(file);
 }
 
-// ── Modal Helpers ──
+/*Modal Helpers*/
 function openModal(modalId) {
     document.getElementById(modalId)?.classList.add('open');
 }
@@ -100,14 +96,14 @@ function closeModal(modalId) {
     document.getElementById(modalId)?.classList.remove('open');
 }
 
-// Close modal on backdrop click
+/*Close modal on backdrop click*/
 document.addEventListener('click', (e) => {
     if (e.target.classList.contains('modal-backdrop')) {
         e.target.classList.remove('open');
     }
 });
 
-// ── Chat Helpers ──
+/*Chat Helpers*/
 function scrollToBottom(elementId) {
     const el = document.getElementById(elementId);
     if (el) {
@@ -120,7 +116,7 @@ function autoResizeTextarea(textarea) {
     textarea.style.height = Math.min(textarea.scrollHeight, 120) + 'px';
 }
 
-// ── Password Strength ──
+/*Password Strength*/
 function checkPasswordStrength(password) {
     let score = 0;
     if (password.length >= 6) score++;
@@ -145,12 +141,12 @@ function checkPasswordStrength(password) {
     }
 }
 
-// ── Confirm Dialog ──
+/*Confirm Dialog*/
 function confirmAction(message) {
     return confirm(message);
 }
 
-// ── Format Date ──
+/*Format Date*/
 function formatDate(dateStr) {
     if (!dateStr) return '—';
     const date = new Date(dateStr);
@@ -163,12 +159,12 @@ function formatDate(dateStr) {
     });
 }
 
-// ── Initialize on DOM Ready ──
+/*Initialize on DOM Ready*/
 document.addEventListener('DOMContentLoaded', () => {
-    // Close sidebar overlay
+    /*Close sidebar overlay*/
     document.querySelector('.sidebar-overlay')?.addEventListener('click', closeSidebar);
 
-    // Auto-resize textareas
+    /*Auto-resize textareas*/
     document.querySelectorAll('textarea.auto-resize').forEach(ta => {
         ta.addEventListener('input', () => autoResizeTextarea(ta));
     });

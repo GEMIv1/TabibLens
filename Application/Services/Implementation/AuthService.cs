@@ -118,10 +118,8 @@ namespace Application.Services.Implementation
 
             var user = refreshToken.User;
 
-            // Revoke the old refresh token (rotation)
             _refreshTokenRepository.Revoke(refreshToken);
 
-            // Generate new tokens
             var accessToken = GenerateAccessToken(user);
             var newRefreshTokenValue = GenerateRefreshToken();
 
