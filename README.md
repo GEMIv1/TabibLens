@@ -5,13 +5,13 @@ An AI-powered **.NET 8 Web API** for scanning handwritten prescriptions via OCR,
 ## Screenshots
 
 ### Dashboard
-![Dashboard](./screenshots/dashboard.png)
+![Dashboard](./Screenshots/dashboard.png)
 
 ### Prescription Processing
-![Prescription Scan](./screenshots/prescription_scan.png)
+![Prescription Scan](./Screenshots/prescription_scan.png)
 
 ### AI Pharmaceutical Assistant
-![AI Chat Assistant](./screenshots/chat_assistant.png)
+![AI Chat Assistant](./Screenshots/chat_assistant.png)
 
 
 ## Architecture
