@@ -131,21 +131,21 @@ All entities inherit from `BaseEntity` (`Id`, `CreatedAt`, `UpdatedAt`, `IsDelet
 ```json
 {
   "ConnectionStrings": {
-    "DefaultConnection": "Host=localhost;Port=5432;Database=TabibLens;Username=postgres;Password=YOUR_PASSWORD"
+    "DefaultConnection": "CONNECTION_STRING"
   },
   "JwtSettings": {
-    "SecretKey": "YOUR_SECRET_KEY_AT_LEAST_32_CHARS",
+    "SecretKey": "SECRET_KEY_AT_LEAST_32_CHARS",
     "Issuer": "TabibLens",
     "Audience": "TabibLens-Client",
     "AccessTokenExpiryMinutes": 15,
     "RefreshTokenExpiryDays": 7
   },
   "HuggingFace": {
-    "ApiKey": "YOUR_HUGGINGFACE_API_KEY",
+    "ApiKey": "HUGGINGFACE_API_KEY",
     "ModelId": "Qwen/Qwen2.5-VL-7B-Instruct"
   },
   "Groq": {
-    "ApiKey": "YOUR_GROQ_API_KEY",
+    "ApiKey": "GROQ_API_KEY",
     "Model": "llama-3.3-70b-versatile",
     "Temperature": 0.7,
     "MaxTokens": 1024
