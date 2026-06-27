@@ -5,9 +5,9 @@ An AI-powered **.NET 8 Web API** for scanning handwritten prescriptions via OCR,
 ## Screenshots
 
 <p align="center">
-  <img src="Screenshot 2026-06-27 143327.png" alt="Dashboard" width="32%" />
-  <img src="Screenshot 2026-06-27 143526.png" alt="Prescription Scan" width="32%" />
-  <img src="Screenshot 2026-06-27 143729.png" alt="AI Chat Assistant" width="32%" />
+  <img src="Screenshot%202026-06-27%20143327.png" alt="Dashboard" width="32%" />
+  <img src="Screenshot%202026-06-27%20143526.png" alt="Prescription Scan" width="32%" />
+  <img src="Screenshot%202026-06-27%20143729.png" alt="AI Chat Assistant" width="32%" />
 </p>
 
 ## Architecture
@@ -259,10 +259,14 @@ TabibLens/
 │   ├── Program.cs             # DI, middleware, JWT config
 │   └── appsettings.json       # Configuration
 │
-└── TabibLens.Web/             # Razor Pages frontend application
-    ├── Pages/                 # Razor Pages (Auth, Chat, Prescriptions, Shared, Dashboard, Index, Error)
-    ├── Services/              # ApiService for communicating with the backend API
-    ├── wwwroot/               # Static assets (CSS, JS, images)
-    ├── Program.cs             # Frontend routing and configuration
-    └── appsettings.json       # Frontend settings (API base URL)
+├── TabibLens.Web/             # Razor Pages frontend application
+│   ├── Pages/                 # Razor Pages (Auth, Chat, Prescriptions, Shared, Dashboard, Index, Error)
+│   ├── Services/              # ApiService for communicating with the backend API
+│   ├── wwwroot/               # Static assets (CSS, JS, images)
+│   ├── Program.cs             # Frontend routing and configuration
+│   └── appsettings.json       # Frontend settings (API base URL)
+├── docker-compose.yml         # Docker Compose orchestration config
+├── Screenshot 2026-06-27 143327.png
+├── Screenshot 2026-06-27 143526.png
+└── Screenshot 2026-06-27 143729.png
 ```
