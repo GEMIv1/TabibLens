@@ -142,7 +142,7 @@ All entities inherit from `BaseEntity` (`Id`, `CreatedAt`, `UpdatedAt`, `IsDelet
   },
   "HuggingFace": {
     "ApiKey": "HUGGINGFACE_API_KEY",
-    "ModelId": "Qwen/Qwen2.5-VL-7B-Instruct"
+    "ModelId": "Qwen/Qwen2.5-VL-7B-Instruct:novita"
   },
   "Groq": {
     "ApiKey": "GROQ_API_KEY",
